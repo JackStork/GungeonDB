@@ -1,4 +1,6 @@
 # GungeonDB
-Having fun :) /n
-no -mason /n
+Having fun :)
+
+no -mason 
+
 wow, i can edit -jacob
