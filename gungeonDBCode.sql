@@ -32,8 +32,8 @@ create table Run(
 
 create table Weapons(
   weaponName varchar(50) not null,
-  baseDamage int,
-  tier char(1) not null,
+  baseDamage float,
+  tier char(1),
   weapDescription varchar(1000),
   primary key (weaponName)
 );
@@ -58,7 +58,8 @@ create table CurrentlyHasWeapon(
 create table Items(
   itemName varchar(50) not null,
   effect varchar(1000),
-  price int,
+  tier char(1),
+  sellPrice float,
   itemType varchar(50),
   primary key (itemName)
 );
@@ -139,5 +140,74 @@ create table NPC_Appears_On(
   foreign key (npcName) references NPCs(npcName),
   foreign key (chamberNo) references Chambers(chamberNo)
 );
+
+/* Adding game information to tables */
+
+/* Character Info */
+insert into Characters (charName)
+values ("The Convict");
+insert into Characters (charName)
+values ("The Hunter");
+insert into Characters (charName)
+values ("The Marine");
+insert into Characters (charName)
+values ("The Pilot");
+insert into Characters (charName)
+values ("The Cultist");
+insert into Characters (charName)
+values ("The Bullet");
+insert into Characters (charName)
+values ("The Robot");
+insert into Characters (charName)
+values ("The Paradox");
+insert into Characters (charName)
+values ("The Gunslinger");
+
+/* Character Skin Info */
+
+
+/* Weapons Info */
+insert into Weapons (weaponName, baseDamage, weapDescription)
+values ("Rusty Sidearm", 16.4, "The Hunter's starting gun.");
+insert into Weapons (weaponName, baseDamage, weapDescription)
+values ("Marine Sidearm", 14.5, "The Marine's starting gun.");
+insert into Weapons (weaponName, baseDamage, weapDescription)
+values ("Rogue Special", 13.6, "The Pilot's starting gun.");
+insert into Weapons (weaponName, baseDamage, tier, weapDescription)
+values ("Blasphemy", 28, "B", "The Bullet's starting gun. Fires a beam at full HP, which does extra damage. Can be swung to destroy bullets.");
+insert into Weapons (weaponName, baseDamage, tier, weapDescription)
+values ("Casey", 50, "D", "Melee weapon that can damage nearby enemies and reflect bullets after charged. Increases curse by +2.");
+insert into Weapons (weaponName, baseDamage, tier, weapDescription)
+values ("Shotgun Full of Hate", 54.5, "A", "Shotgun that fires a spread of 6 bullets (2 poison, 2 regular, a piercing nail, and a bouncing skull).");
+/* Sort weapon info by tier */
+/* alter table Weapons order by tier desc; */
+
+/* Weapon Weapon Synergy Info */
+insert into W_W_Synergy (weaponOne, weaponTwo, synergyEffect)
+values ("Casey", "Shotgun Full of Hate", "Casey becomes spiked and fires a spread of 6 nails each to it is swung. When an enemy gets hit, they become red and take damage over time.");
+
+/* Items Info */
+insert into Items (itemName, effect, itemType)
+values ("Master Round I", "Grants an extra heart container.", "Passive");
+insert into Items (itemName, effect, tier, sellPrice, itemType)
+values ("Scope", "Reduces shot spread by 60%.", "D", 16, "Passive");
+
+/* Select statements to see contents of tables */
+
+/* Character Info */
+select all charName
+from Characters;
+
+/* Weapon Info */
+select all weaponName, baseDamage, tier, weapDescription
+from Weapons;
+
+/* Weapon Weapon Synergy Info */
+select all weaponOne, weaponTwo, synergyEffect
+from W_W_Synergy;
+
+/* Item Info */
+select all itemName, effect, tier, sellPrice, itemType
+from Items;
 
 drop database gungeonDB;
