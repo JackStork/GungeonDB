@@ -35,6 +35,7 @@ create table Weapons(
   baseDamage float,
   tier char(1),
   weapDescription varchar(1000),
+  sellPrice float,
   primary key (weaponName)
 );
 
@@ -141,6 +142,7 @@ create table NPC_Appears_On(
   foreign key (chamberNo) references Chambers(chamberNo)
 );
 
+
 /* Adding game information to tables */
 
 /* Character Info */
@@ -165,28 +167,50 @@ values ("The Gunslinger");
 
 /* Character Skin Info */
 
+/* Chamber Info */
+insert into Chambers (chamberNo)
+values (1);
+insert into Chambers (chamberNo)
+values (1.5);
+insert into Chambers (chamberNo)
+values (2);
+insert into Chambers (chamberNo)
+values (2.5);
+insert into Chambers (chamberNo)
+values (3);
+insert into Chambers (chamberNo)
+values (4);
+insert into Chambers (chamberNo)
+values (5);
+
+/* NPC Info */
 
 /* Weapons Info */
-insert into Weapons (weaponName, baseDamage, weapDescription)
-values ("Rusty Sidearm", 16.4, "The Hunter's starting gun.");
-insert into Weapons (weaponName, baseDamage, weapDescription)
-values ("Marine Sidearm", 14.5, "The Marine's starting gun.");
-insert into Weapons (weaponName, baseDamage, weapDescription)
-values ("Rogue Special", 13.6, "The Pilot's starting gun.");
-insert into Weapons (weaponName, baseDamage, tier, weapDescription)
-values ("Blasphemy", 28, "B", "The Bullet's starting gun. Fires a beam at full HP, which does extra damage. Can be swung to destroy bullets.");
-insert into Weapons (weaponName, baseDamage, tier, weapDescription)
-values ("Casey", 50, "D", "Melee weapon that can damage nearby enemies and reflect bullets after charged. Increases curse by +2.");
-insert into Weapons (weaponName, baseDamage, tier, weapDescription)
-values ("Shotgun Full of Hate", 54.5, "A", "Shotgun that fires a spread of 6 bullets (2 poison, 2 regular, a piercing nail, and a bouncing skull).");
-insert into Weapons (weaponName, baseDamage, tier, weapDescription)
-values ("A.W.P", 30.5, "A", "Fires a piercing bullet with extremely fast bullet speed.");
+insert into Weapons (weaponName, baseDamage, weapDescription, sellPrice)
+values ("Rusty Sidearm", 16.4, "The Hunter's starting gun.", 0);
+insert into Weapons (weaponName, baseDamage, weapDescription, sellPrice)
+values ("Marine Sidearm", 14.5, "The Marine's starting gun.", 0);
+insert into Weapons (weaponName, baseDamage, weapDescription, sellPrice)
+values ("Rogue Special", 13.6, "The Pilot's starting gun.", 0);
+insert into Weapons (weaponName, baseDamage, tier, weapDescription, sellPrice)
+values ("Blasphemy", 28, "B", "The Bullet's starting gun. Fires a beam at full HP, which does extra damage. Can be swung to destroy bullets.", 30);
+insert into Weapons (weaponName, baseDamage, tier, weapDescription, sellPrice)
+values ("Casey", 50, "D", "Melee weapon that can damage nearby enemies and reflect bullets after charged. Increases curse by +2.", 16);
+insert into Weapons (weaponName, baseDamage, tier, weapDescription, sellPrice)
+values ("Shotgun Full of Hate", 54.5, "A", "Shotgun that fires a spread of 6 bullets (2 poison, 2 regular, a piercing nail, and a bouncing skull).", 41);
+insert into Weapons (weaponName, baseDamage, tier, weapDescription, sellPrice)
+values ("A.W.P", 30.5, "A", "Fires a piercing bullet with extremely fast bullet speed.", 41);
+insert into Weapons (weaponName, baseDamage, tier, weapDescription, sellPrice)
+values ("Shotgun Full of Love", 51.1, "A", "Fires a spread of 6 projectiles (two pink bullets, and exploding star, a candy, and two teddy bears). Projectiles have a chance to charm enemies.", 41);
+
 /* Sort weapon info by tier */
 /* alter table Weapons order by tier desc; */
 
 /* Weapon Weapon Synergy Info */
 insert into W_W_Synergy (weaponOne, weaponTwo, synergyEffect)
 values ("Casey", "Shotgun Full of Hate", "Casey becomes spiked and fires a spread of 6 nails each to it is swung. When an enemy gets hit, they become red and take damage over time.");
+insert into W_W_Synergy (weaponOne, weaponTwo, synergyEffect)
+values ("Shotgun Full of Hate", "Shotgun Full of Love", "Shotgun Full of Hate and Shotgun Full of Love are dual-wielded.");
 
 /* Items Info */
 insert into Items (itemName, effect, itemType)
@@ -206,14 +230,83 @@ values ("Explosive Decoy", "Monster Blood", "Explosive decoy explodes and create
 insert into W_I_Synergy (weaponName, itemName, synergyEffect)
 values ("A.W.P", "Scope", "Spinning 360 degrees before firing the A.W.P grants a 3-second damage buff that gives the next shot +50% damage. Can stack.");
 
+
+/* Relationship Insertion to Simulate In-Game Additions */
+
+/* Create run number */
+insert into Run (runNo, runCharacter)
+values (1, "The Marine");
+
+/* Adding guns */
+insert into CurrentlyHasWeapon (weaponName, runNo)
+values ("Casey", 1);
+insert into CurrentlyHasWeapon (weaponName, runNo)
+values ("Shotgun Full of Hate", 1);
+insert into CurrentlyHasWeapon (weaponName, runNo)
+values ("A.W.P", 1);
+insert into CurrentlyHasWeapon (weaponName, runNo)
+values ("Shotgun Full of Love", 1);
+
+/* Adding items */
+insert into CurrentlyHasItem (itemName, runNo)
+values ("Explosive Decoy", 1);
+insert into CurrentlyHasItem (itemName, runNo)
+values ("Monster Blood", 1);
+insert into CurrentlyHasItem (itemName, runNo)
+values ("Scope", 1);
+
+
 /* Select statements to see contents of tables */
+
+/* Output all synergies of a run */
+select r.runNo as RunNumber, ww.synergyEffect as CurrentWeaponSynergies
+from Run as r, W_W_Synergy as ww
+where exists (select *
+			  from CurrentlyHasWeapon as chw
+              where chw.weaponName = ww.weaponOne)
+and exists (select *
+            from CurrentlyHasWeapon as chw
+		    where chw.weaponName = ww.weaponTwo);
+            
+select r.runNo as RunNumber, wi.synergyEffect as CurrentWeaponItemSynergies
+from Run as r, W_I_Synergy as wi
+where exists (select *
+			  from CurrentlyHasWeapon as chw
+              where chw.weaponName = wi.weaponName)
+and exists (select *
+            from CurrentlyHasItem as chi
+		    where chi.itemName = wi.itemName);
+            
+select r.runNo as RunNumber, ii.synergyEffect as CurrentItemSynergies
+from Run as r, I_I_Synergy as ii
+where exists (select *
+			  from CurrentlyHasItem as chi
+              where chi.itemName = ii.itemOne)
+and exists (select *
+            from CurrentlyHasItem as chi
+		    where chi.itemName = ii.itemTwo);
+
+/* Output net worth of a run */
+select r.runNo as RunNumber, SUM(w.sellPrice) as TotalWeaponValue
+from Run as r, Weapons as w, CurrentlyHasWeapon as chw
+where w.weaponName = chw.weaponName
+group by r.runNo;
+
+select r.runNo as RunNumber, SUM(i.sellPrice) as TotalItemValue
+from Run as r, Items as i, CurrentlyHasItem as chi
+where i.itemName = chi.itemName;
+
+/* Output number of enemies fought in run */
+
+
+
 
 /* Character Info */
 select all charName
 from Characters;
 
 /* Weapon Info */
-select all weaponName, baseDamage, tier, weapDescription
+select all weaponName, baseDamage, tier, weapDescription, sellPrice
 from Weapons;
 
 /* Weapon Weapon Synergy Info */
@@ -231,5 +324,10 @@ from I_I_Synergy;
 /* Weapon Item Synergy Info */
 select all weaponName, itemName, synergyEffect
 from W_I_Synergy;
+
+
+
+
+/* Specialized Select Statements */
 
 drop database gungeonDB;
