@@ -179,6 +179,8 @@ insert into Weapons (weaponName, baseDamage, tier, weapDescription)
 values ("Casey", 50, "D", "Melee weapon that can damage nearby enemies and reflect bullets after charged. Increases curse by +2.");
 insert into Weapons (weaponName, baseDamage, tier, weapDescription)
 values ("Shotgun Full of Hate", 54.5, "A", "Shotgun that fires a spread of 6 bullets (2 poison, 2 regular, a piercing nail, and a bouncing skull).");
+insert into Weapons (weaponName, baseDamage, tier, weapDescription)
+values ("A.W.P", 30.5, "A", "Fires a piercing bullet with extremely fast bullet speed.");
 /* Sort weapon info by tier */
 /* alter table Weapons order by tier desc; */
 
@@ -191,6 +193,18 @@ insert into Items (itemName, effect, itemType)
 values ("Master Round I", "Grants an extra heart container.", "Passive");
 insert into Items (itemName, effect, tier, sellPrice, itemType)
 values ("Scope", "Reduces shot spread by 60%.", "D", 16, "Passive");
+insert into Items (itemName, effect, tier, sellPrice, itemType)
+values ("Explosive Decoy", "Places a decoy that enemies will target. Can be used to steal from shops.", "C", 21, "Active");
+insert into Items (itemName, effect, tier, sellPrice, itemType)
+values ("Monster Blood", "Taking damage spawns a pool of poison. Grants a heart container and immunity to poison.", "C", 21, "Passive");
+
+/* Item Item Synergy Info */
+insert into I_I_Synergy (itemOne, itemTwo, synergyEffect)
+values ("Explosive Decoy", "Monster Blood", "Explosive decoy explodes and creates a pool of poison when attacked.");
+
+/* Weapon Item Synergy Info */
+insert into W_I_Synergy (weaponName, itemName, synergyEffect)
+values ("A.W.P", "Scope", "Spinning 360 degrees before firing the A.W.P grants a 3-second damage buff that gives the next shot +50% damage. Can stack.");
 
 /* Select statements to see contents of tables */
 
@@ -209,5 +223,13 @@ from W_W_Synergy;
 /* Item Info */
 select all itemName, effect, tier, sellPrice, itemType
 from Items;
+
+/* Item Item Synergy Info */
+select all itemOne, itemTwo, synergyEffect
+from I_I_Synergy;
+
+/* Weapon Item Synergy Info */
+select all weaponName, itemName, synergyEffect
+from W_I_Synergy;
 
 drop database gungeonDB;
