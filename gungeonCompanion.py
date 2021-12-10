@@ -2,7 +2,7 @@ import pymysql
 
 con = pymysql.connect(host='localhost',
                       user='root',
-                      password='',
+                      password=' ',
                       database='gungeonDB')
 """
 cursor = con.cursor()
