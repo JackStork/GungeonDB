@@ -22,7 +22,6 @@ create table CharacterSkin(
   foreign key (skinCharacter) references Characters(charName)
 );
 
-
 create table Run(
   runNo int not null auto_increment,
   runCharacter varchar(50) not null,
@@ -93,7 +92,6 @@ create table W_I_Synergy(
 
 create table Enemies(
   enemyName varchar(50) not null,
-  jammed bool,
   hp int,
   attacks varchar(1000),
   primary key (enemyName)
@@ -102,6 +100,7 @@ create table Enemies(
 create table Enemies_Fought(
   enemyName varchar(50) not null,
   runNo int not null,
+  jammed bool,
   primary key (enemyName, runNo),
   foreign key (enemyName) references Enemies(enemyName),
   foreign key (runNo) references Run(runNo)
@@ -230,6 +229,24 @@ values ("Explosive Decoy", "Monster Blood", "Explosive decoy explodes and create
 insert into W_I_Synergy (weaponName, itemName, synergyEffect)
 values ("A.W.P", "Scope", "Spinning 360 degrees before firing the A.W.P grants a 3-second damage buff that gives the next shot +50% damage. Can stack.");
 
+/* Enemy Info */
+insert into Enemies (enemyName, hp, attacks)
+values ("Bullet Kin", 15, "Slowly walk towards the player and occasionally fires a single bullet.");
+insert into Enemies (enemyName, hp, attacks)
+values ("Bookllet", 25, "Summons different letter-shaped strings of bullets, which fire at the player one by one.");
+
+/* Enemy Chamber Info */
+insert into Enemy_Appears_On (enemyName, chamberNo)
+values ("Bullet Kin", 1);
+
+/* NPC Info */
+insert into NPCs (npcName, service)
+values ("Merchant", "Runs the main shop.");
+
+/* NPC Chamber Info */
+insert into NPC_Appears_On (npcName, chamberNo)
+values ("Merchant", 1);
+
 
 /* Relationship Insertion to Simulate In-Game Additions */
 
@@ -265,6 +282,13 @@ values ("A.W.P", "Scope", "Spinning 360 degrees before firing the A.W.P grants a
 -- insert into CurrentlyHasItem(itemName, runNo)
 -- values ("Monster Blood", 2);
 
+/* Adding enemies */
+-- insert into Enemies_Fought (enemyName, runNo, jammed)
+-- values ("Bullet Kin", 1, false);
+
+/* Adding NPCs */
+-- insert into NPC_Interaction (npcName, runNo)
+-- values ("Merchant", 1);
 
 /* Select statements to see contents of tables */
 
@@ -307,9 +331,15 @@ values ("A.W.P", "Scope", "Spinning 360 degrees before firing the A.W.P grants a
 -- where i.itemName = chi.itemName and chi.runNo = 1;
 
 
-/* Output number of enemies fought in run */
+/* Output enemies fought in run */
+-- select ef.enemyName
+-- from Enemies_Fought as ef, Enemies as e
+-- where ef.runNo = PYTHONRUNVAL and ef.enemyName = e.enemyName;
 
-
+/* Output NPCs seen in run */
+-- select npci.enemyName
+-- from NPC_Interaction as npci, NPCs as npcs
+-- where npci.runNo = PYTHONRUNVAL and npci.enemyName = npcs.enemyName;
 
 
 /* Character Info */
